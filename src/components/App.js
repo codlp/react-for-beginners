@@ -32,12 +32,15 @@ class App extends React.Component {
   };
 
   addToOrder = key => {
-    // 1. take a copy of state
+    // 1. Take a copy of state
     const order = { ...this.state.order };
     // 2. Either add to the order, or update the number in our order
+    // if order[key] exists, then we add 1 to it
+    // if not, then we return 1
     order[key] = order[key] + 1 || 1;
     // 3. Call setState to update our state object
     this.setState({ order });
+    // this.setState({ order: order });
   };
 
   render() {
@@ -47,18 +50,31 @@ class App extends React.Component {
           { /* Adding props to our Header component */}
           <Header tagline="Fresh Seafood Market" age={26} cool={true} />
           <ul className="fishes">
+            { /* We use Object.keys to be able to map over the Object fishes */}
             {Object.keys(this.state.fishes).map(key => (
+              /* Each child in an array or iterator should have a unique "key" prop
+              So we add a React key attribute and we give it the value of key.
+              Example of key: fish1 */
               <Fish
                 key={key}
                 index={key}
                 details={this.state.fishes[key]}
+                // We pass our custom method addToOrder to the fish component
+                // This method takes a key as an argument
+                // But the key is not available in the Fish Component (in the dev tools, Key is located in the sidebar next to Props)
+                // So we have to create an attribute (here, "index") with the value of key
                 addToOrder={this.addToOrder}
               />
             ))}
           </ul>
         </div>
-        <Order fishes={this.state.fishes} order={this.state.order} />
+
+        <Order
+          fishes={this.state.fishes}
+          order={this.state.order}
+        />
         {/* We pass the addFish state to the Inventory component so that we can then pass it to the AddFishForm component */}
+        
         <Inventory
           addFish={this.addFish}
           loadSampleFishes={this.loadSampleFishes}
