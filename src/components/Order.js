@@ -1,13 +1,50 @@
 import React from "react";
 
+import { formatPrice } from "../helpers";
+
 class Order extends React.Component {
+  renderOrder = key => {
+    const fish = this.props.fishes[key];
+    const count = this.props.order[key];
+    const isAvailable = fish.status === "available";
+    if (!isAvailable) {
+      // If the fish is deleted in the meantime, it no longer has a name, so we call it "fish" in the message
+      return <li key={key}>
+        Sorry {fish ? fish.name : 'fish'} is no longer available.
+      </li>
+    }
+    return <li key={key}>
+      {count} lbs {fish.name}
+      {formatPrice(count * fish.price)}
+    </li>
+  }
+
   render() {
+    const orderIds = Object.keys(this.props.order);
+    // Compute the order total price
+    // prevTotal is how the order costs so far while we are looping through each fish
+    const total = orderIds.reduce((prevTotal, key) => {
+      const fish = this.props.fishes[key];
+      const count = this.props.order[key];
+      const isAvailable = fish && fish.status === "available";
+      if (isAvailable) {
+        return prevTotal + (count * fish.price);
+      }
+      // If the fish is not available
+      return prevTotal;
+      // We start with a value of zero
+    }, 0);
+
     return <div className="order-wrap">
       <h2>Order</h2>
-      <ul>
-        
+      <ul className="order">
+        {orderIds.map(this.renderOrder)}
       </ul>
-    </div>;
+      <div className="total">
+        Total:
+        <strong>{formatPrice(total)}</strong>
+      </div>
+    </div>
   }
 }
 

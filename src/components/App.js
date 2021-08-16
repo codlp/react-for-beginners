@@ -69,6 +69,8 @@ class App extends React.Component {
           </ul>
         </div>
 
+        {/* <Order {...this.state} /> would load the whole state into the Order component,
+        but it is better to only load the elements that we need */}
         <Order
           fishes={this.state.fishes}
           order={this.state.order}
